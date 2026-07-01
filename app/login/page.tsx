@@ -77,19 +77,19 @@ export default function LoginPage() {
         </form>
       )}
 
-      <div className="my-6 flex items-center gap-3 text-xs text-slate-400">
-        <span className="h-px flex-1 bg-slate-200" /> or <span className="h-px flex-1 bg-slate-200" />
-      </div>
-
-      <button
-        onClick={google}
-        className="w-full rounded-md border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-slate-400"
-      >
-        Continue with Google
-      </button>
-      <p className="mt-3 text-xs text-slate-400">
-        (Google sign-in requires enabling the Google provider in your Supabase project.)
-      </p>
+      {process.env.NEXT_PUBLIC_ENABLE_GOOGLE === "true" && (
+        <>
+          <div className="my-6 flex items-center gap-3 text-xs text-slate-400">
+            <span className="h-px flex-1 bg-slate-200" /> or <span className="h-px flex-1 bg-slate-200" />
+          </div>
+          <button
+            onClick={google}
+            className="w-full rounded-md border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-slate-400"
+          >
+            Continue with Google
+          </button>
+        </>
+      )}
     </div>
   );
 }

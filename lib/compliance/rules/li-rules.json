@@ -39,6 +39,11 @@
     "un38_3Mandatory": true,
     "whMarkOnCaseRequiredAfter": "2024-05-10"
   },
+  "conditions": {
+    "forbiddenByAir": ["damaged_defective", "recalled", "waste"],
+    "approvalRequired": ["prototype"],
+    "note": "Damaged, defective, recalled, and waste/for-disposal lithium batteries are forbidden for transport by air. Prototype / low-production-run batteries require competent-authority approval and ship as Section IA."
+  },
   "sectionII": {
     "availableForConfigurations": ["packed_with_equipment", "contained_in_equipment"],
     "removedForStandaloneSince": "2022-03-31",

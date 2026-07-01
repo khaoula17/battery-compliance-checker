@@ -109,6 +109,40 @@ describe("validate — aircraft & section II limits", () => {
   });
 });
 
+describe("validate — condition prohibitions", () => {
+  it("damaged/defective is forbidden by air (blocking)", () => {
+    const input: ShipmentInput = { ...okIon, condition: "damaged_defective" };
+    expect(codes(input)).toContain("FORBIDDEN_BY_AIR");
+    expect(runCheck(input).passed).toBe(false);
+  });
+  it("recalled is forbidden by air", () => {
+    expect(codes({ ...okIon, condition: "recalled" })).toContain("FORBIDDEN_BY_AIR");
+  });
+  it("waste/for-disposal is forbidden by air", () => {
+    expect(codes({ ...okIon, condition: "waste" })).toContain("FORBIDDEN_BY_AIR");
+  });
+  it("prototype requires approval (blocking)", () => {
+    const input: ShipmentInput = { ...okIon, condition: "prototype" };
+    expect(codes(input)).toContain("CONDITION_APPROVAL_REQUIRED");
+    expect(runCheck(input).passed).toBe(false);
+  });
+  it("normal condition adds no prohibition", () => {
+    expect(codes({ ...okIon, condition: "normal" })).not.toContain("FORBIDDEN_BY_AIR");
+  });
+});
+
+describe("validate — aircraft type", () => {
+  it("blocks standalone lithium (CAO) booked on a passenger aircraft", () => {
+    const input: ShipmentInput = { ...okIon, aircraft: "passenger" };
+    expect(codes(input)).toContain("PASSENGER_FORBIDDEN");
+    expect(runCheck(input).passed).toBe(false);
+  });
+  it("allows standalone lithium on a cargo aircraft", () => {
+    const input: ShipmentInput = { ...okIon, aircraft: "cargo" };
+    expect(codes(input)).not.toContain("PASSENGER_FORBIDDEN");
+  });
+});
+
 describe("runCheck — overall", () => {
   it("a clean standalone lithium-ion shipment is Section IB and passes", () => {
     const result = runCheck(okIon);

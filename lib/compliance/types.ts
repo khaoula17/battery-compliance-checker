@@ -13,6 +13,17 @@ export type ItemType = "cell" | "battery";
 
 export type Operator = "GENERIC" | "FEDEX" | "UPS" | "DHL";
 
+// Physical condition / purpose of the batteries. Several conditions are
+// FORBIDDEN for transport by air.
+export type Condition =
+  | "normal"
+  | "damaged_defective" // forbidden by air
+  | "recalled" // forbidden by air (unless approved)
+  | "waste" // for disposal/recycling — forbidden by air
+  | "prototype"; // low-production/prototype — needs approval, Section IA
+
+export type Aircraft = "cargo" | "passenger" | "unspecified";
+
 // What the user (or the AI SDS reader, later) provides about a shipment.
 export interface ShipmentInput {
   chemistry: Chemistry;
@@ -46,6 +57,12 @@ export interface ShipmentInput {
 
   /** Carrier whose variations to apply. */
   operator?: Operator;
+
+  /** Physical condition / purpose (some conditions are forbidden by air). */
+  condition?: Condition;
+
+  /** Aircraft type the shipment will travel on. */
+  aircraft?: Aircraft;
 }
 
 // Section I applies to the "packed with / contained in equipment" packing

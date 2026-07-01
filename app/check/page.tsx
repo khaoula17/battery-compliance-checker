@@ -28,6 +28,8 @@ export default function CheckPage() {
     whMarkedOnCase: true,
     exceedsSectionIIQuantity: false,
     operator: "GENERIC",
+    condition: "normal",
+    aircraft: "unspecified",
   });
   const [result, setResult] = useState<CheckResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -191,6 +193,26 @@ export default function CheckPage() {
               <option value="FEDEX">FedEx</option>
               <option value="UPS">UPS</option>
               <option value="DHL">DHL</option>
+            </select>
+          </Field>
+
+          <Field label="Aircraft">
+            <select className="input" value={form.aircraft}
+              onChange={(e) => set("aircraft", e.target.value as ShipmentInput["aircraft"])}>
+              <option value="unspecified">Not sure yet</option>
+              <option value="cargo">Cargo aircraft (CAO)</option>
+              <option value="passenger">Passenger aircraft</option>
+            </select>
+          </Field>
+
+          <Field label="Condition">
+            <select className="input" value={form.condition}
+              onChange={(e) => set("condition", e.target.value as ShipmentInput["condition"])}>
+              <option value="normal">Normal / new</option>
+              <option value="damaged_defective">Damaged or defective</option>
+              <option value="recalled">Recalled</option>
+              <option value="waste">Waste / for disposal or recycling</option>
+              <option value="prototype">Prototype / low production run</option>
             </select>
           </Field>
 

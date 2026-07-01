@@ -6,11 +6,56 @@
 import { rules, cite } from "./rules";
 import type { Classification, Finding, ShipmentInput } from "./types";
 
+function labelForCondition(c: string): string {
+  switch (c) {
+    case "damaged_defective":
+      return "Damaged or defective";
+    case "recalled":
+      return "Recalled";
+    case "waste":
+      return "Waste / for-disposal";
+    default:
+      return c;
+  }
+}
+
 export function validate(
   input: ShipmentInput,
   cls: Classification
 ): Finding[] {
   const findings: Finding[] = [];
+
+  // --- Condition-based prohibitions (checked first — these override) ---
+  const condition = input.condition ?? "normal";
+  if (rules.conditions.forbiddenByAir.includes(condition)) {
+    findings.push({
+      code: "FORBIDDEN_BY_AIR",
+      severity: "error",
+      message: `${labelForCondition(condition)} lithium batteries are forbidden for transport by air.`,
+      fix: "These must not be shipped by air. Use approved ground disposal/recycling channels, or obtain special competent-authority approval.",
+      citation: cite("cfr_173_185"),
+    });
+  }
+  if (rules.conditions.approvalRequired.includes(condition)) {
+    findings.push({
+      code: "CONDITION_APPROVAL_REQUIRED",
+      severity: "error",
+      message: "Prototype / low-production-run lithium batteries require competent-authority approval and must ship as Section IA.",
+      fix: "Obtain State-of-Origin / competent-authority approval before shipping.",
+      citation: cite("iata_li_guidance"),
+    });
+  }
+
+  // --- Aircraft type vs Cargo Aircraft Only ---
+  if (input.aircraft === "passenger" && cls.cargoAircraftOnly) {
+    findings.push({
+      code: "PASSENGER_FORBIDDEN",
+      severity: "error",
+      message: `${cls.unNumber} is forbidden on passenger aircraft — you selected passenger aircraft.`,
+      fix: "Ship on a cargo aircraft (CAO), or choose a service that offers cargo-aircraft transport.",
+      citation: cite("iata_li_guidance"),
+    });
+  }
 
   // --- Required data present? ---
   if (input.chemistry === "ion" && input.whPerUnit == null) {

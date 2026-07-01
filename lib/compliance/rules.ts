@@ -42,6 +42,11 @@ export interface Ruleset {
     note: string;
   };
   documentation: { un38_3Mandatory: boolean; whMarkOnCaseRequiredAfter: string };
+  conditions: {
+    forbiddenByAir: string[];
+    approvalRequired: string[];
+    note: string;
+  };
   sectionII: {
     availableForConfigurations: string[];
     removedForStandaloneSince: string;
