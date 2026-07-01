@@ -1,0 +1,87 @@
+{
+  "version": "2026.1",
+  "edition": "IATA DGR 67th Edition (2026)",
+  "effectiveDate": "2026-01-01",
+  "lastReviewed": "2026-06-30",
+  "disclaimer": "Simplified ruleset for pre-flight checking only. Always verify against the current full IATA DGR / 49 CFR and applicable operator & state variations before tendering. A trained, certified shipper must sign the Shipper's Declaration.",
+  "chemistries": {
+    "ion": {
+      "label": "Lithium-ion",
+      "cellThresholdWh": 20,
+      "batteryThresholdWh": 100,
+      "configurations": {
+        "standalone": { "un": "UN3480", "psn": "Lithium ion batteries", "pi": "965" },
+        "packed_with_equipment": { "un": "UN3481", "psn": "Lithium ion batteries packed with equipment", "pi": "966" },
+        "contained_in_equipment": { "un": "UN3481", "psn": "Lithium ion batteries contained in equipment", "pi": "967" }
+      }
+    },
+    "metal": {
+      "label": "Lithium-metal",
+      "cellThresholdG": 1,
+      "batteryThresholdG": 2,
+      "configurations": {
+        "standalone": { "un": "UN3090", "psn": "Lithium metal batteries", "pi": "968" },
+        "packed_with_equipment": { "un": "UN3091", "psn": "Lithium metal batteries packed with equipment", "pi": "969" },
+        "contained_in_equipment": { "un": "UN3091", "psn": "Lithium metal batteries contained in equipment", "pi": "970" }
+      }
+    }
+  },
+  "stateOfCharge": {
+    "maxPct": 30,
+    "indicatedMaxPct": 25,
+    "rules": [
+      { "un": "UN3480", "minWhPerUnit": 0, "scope": "Standalone lithium-ion (all cases)" },
+      { "un": "UN3481", "minWhPerUnit": 2.7, "scope": "Lithium-ion packed with / contained in equipment, cells/batteries > 2.7 Wh (new in IATA 67th ed., 2026)" }
+    ],
+    "note": "≤30% of rated capacity (or ≤25% indicated). Hard requirement in the 67th edition (2026), and now expanded beyond standalone UN3480 to UN3481 with equipment above 2.7 Wh."
+  },
+  "documentation": {
+    "un38_3Mandatory": true,
+    "whMarkOnCaseRequiredAfter": "2024-05-10"
+  },
+  "sectionII": {
+    "availableForConfigurations": ["packed_with_equipment", "contained_in_equipment"],
+    "removedForStandaloneSince": "2022-03-31",
+    "standaloneNote": "Section II was removed from PI 965 (UN3480) and PI 968 (UN3090) effective 31 March 2022. Standalone lithium cells/batteries must now ship as Section IB or IA (fully regulated).",
+    "perPackageLimits": {
+      "verifyNote": "Widely-published Section II per-package limits. VERIFY against the current IATA DGR before commercial reliance.",
+      "smallWhThreshold": 2.7,
+      "smallNetKgLimit": 2.5,
+      "maxCellsAboveSmall": 8,
+      "maxBatteriesAboveSmall": 2
+    }
+  },
+  "operatorVariations": {
+    "GENERIC": {
+      "label": "Generic (base IATA, no carrier overlay)",
+      "prohibitsSectionIIStandalone": false
+    },
+    "FEDEX": {
+      "label": "FedEx",
+      "prohibitsSectionIIStandalone": true,
+      "sectionIAPreApproval": "A88/A99",
+      "note": "FedEx prohibits standalone lithium cells/batteries (UN3480/UN3090) offered as Section II; must ship fully regulated and may require pre-approval."
+    },
+    "UPS": {
+      "label": "UPS",
+      "prohibitsSectionIIStandalone": false,
+      "sectionIIStandaloneNeedsApproval": true,
+      "note": "UPS accepts hazmat on a contract basis; standalone Section II lithium may require pre-approval and computer-generated documentation."
+    },
+    "DHL": {
+      "label": "DHL",
+      "prohibitsSectionIIStandalone": false,
+      "sectionIIStandaloneNeedsApproval": true,
+      "note": "DHL Express requires approval from its Restricted Commodities Group for standalone Section II lithium batteries."
+    }
+  },
+  "citations": {
+    "iata_li_guidance": { "ref": "IATA Lithium Battery Guidance Document", "url": "https://www.iata.org/contentassets/05e6d8742b0047259bf3a700bc9d42b9/lithium-battery-guidance-document.pdf" },
+    "un38_3": { "ref": "UN Manual of Tests & Criteria, sub-section 38.3 (test summary mandatory since 1 Jan 2020)", "url": "https://unece.org/fileadmin/DAM/trans/danger/publi/manual/Manual%20Rev5%20Section%2038-3.pdf" },
+    "soc_30": { "ref": "IATA DGR 67th ed. — 30% state-of-charge limit for UN3480", "url": "https://www.lion.com/lion-news/december-2025/new-lithium-battery-state-of-charge-limit-in-effect-jan-1" },
+    "soc_2026": { "ref": "IATA DGR 67th ed. (2026) — SoC requirement expanded to UN3481 with equipment (>2.7 Wh)", "url": "https://www.hazmatuniversity.com/news/lithium-battery-air-transport-2026-iata-and-icao-compliance-guide/" },
+    "cfr_173_185": { "ref": "49 CFR 173.185 — Lithium cells and batteries", "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-I/subchapter-C/part-173/subpart-E/section-173.185" },
+    "fedex_batteries": { "ref": "FedEx — How to ship batteries", "url": "https://www.fedex.com/en-us/shipping/how-to-ship-batteries.html" },
+    "iata_training": { "ref": "IATA — DG training & certification (recurrent every 24 months)", "url": "https://www.iata.org/en/publications/newsletters/iata-knowledge-hub/how-to-get-trained-and-certified-on-dangerous-goods-transported-by-air/" }
+  }
+}
