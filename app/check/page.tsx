@@ -41,15 +41,14 @@ export default function CheckPage() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
+  async function runWith(payload: ShipmentInput) {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch("/api/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Check failed");
@@ -60,6 +59,31 @@ export default function CheckPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    await runWith(form);
+  }
+
+  // Instant demo: fill a realistic shipment and run it, so first-time visitors
+  // see a full result without typing anything.
+  function runExample() {
+    const sample: ShipmentInput = {
+      chemistry: "ion",
+      configuration: "standalone",
+      itemType: "battery",
+      whPerUnit: 98,
+      stateOfChargePct: 60, // over 30% → will show a blocking error
+      un38_3TestSummaryAvailable: true,
+      whMarkedOnCase: true,
+      exceedsSectionIIQuantity: false,
+      operator: "FEDEX",
+      aircraft: "passenger", // standalone is CAO → will flag
+      condition: "normal",
+    };
+    setForm(sample);
+    void runWith(sample);
   }
 
   async function uploadSds(e: React.ChangeEvent<HTMLInputElement>) {
@@ -123,6 +147,18 @@ export default function CheckPage() {
         Enter shipment details. (Soon: upload a datasheet and the AI reader fills
         this in for you.)
       </p>
+      <div className="mt-2 flex flex-wrap items-center gap-3">
+        <span className="inline-block rounded-full bg-teal-50 px-3 py-1 text-xs font-medium text-brand">
+          ✓ Checked against IATA DGR 67th edition (2026) — every result cited
+        </span>
+        <button
+          type="button"
+          onClick={runExample}
+          className="text-xs font-medium text-brand underline hover:text-brand-dark"
+        >
+          ▶ Try an example
+        </button>
+      </div>
 
       <div className="mt-8 grid gap-8 md:grid-cols-2">
         {/* Form */}

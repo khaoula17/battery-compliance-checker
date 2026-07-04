@@ -31,9 +31,9 @@ export function validate(
     findings.push({
       code: "FORBIDDEN_BY_AIR",
       severity: "error",
-      message: `${labelForCondition(condition)} lithium batteries are forbidden for transport by air.`,
+      message: `${labelForCondition(condition)} lithium batteries are forbidden for transport by air (IATA Special Provision A154).`,
       fix: "These must not be shipped by air. Use approved ground disposal/recycling channels, or obtain special competent-authority approval.",
-      citation: cite("cfr_173_185"),
+      citation: cite("iata_li_guidance"),
     });
   }
   if (rules.conditions.approvalRequired.includes(condition)) {
@@ -123,7 +123,7 @@ export function validate(
           code: "SOC_OVER_LIMIT",
           severity: "error",
           message: `State of charge ${input.stateOfChargePct}% exceeds the ${max}% limit for ${cls.unNumber} (${socRule.scope}).`,
-          fix: `Discharge to ${max}% of rated capacity (or ${rules.stateOfCharge.indicatedMaxPct ?? 25}% indicated) or less before shipping.`,
+          fix: `Discharge to ${max}% of rated capacity (or ${rules.stateOfCharge.indicatedMaxPct ?? 25}% indicated) or less before shipping. Shipping above the limit requires approval from the States of Origin and Operator.`,
           citation,
         });
       } else if (input.stateOfChargePct == null) {
@@ -190,9 +190,9 @@ export function validate(
   if (cls.section === "II") {
     findings.push({
       code: "SECTION_II_LIMITS",
-      severity: "info",
-      message: "Section II also has per-package quantity and net-weight limits (and a single-package-per-consignment rule for some PIs) that this tool does not yet auto-calculate.",
-      fix: "Verify the package is within the Section II quantity limits for this packing instruction.",
+      severity: "warning",
+      message: "Section II for batteries with equipment has specific quantity limits (generally the number of batteries required to power the device plus at most 2 spare sets, with per-package and consignment limits) that this tool does not fully calculate.",
+      fix: "Manually verify the package is within the Section II quantity limits for this packing instruction before shipping.",
       citation: cite("iata_li_guidance"),
     });
   }

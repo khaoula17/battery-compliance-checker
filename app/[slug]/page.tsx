@@ -29,7 +29,7 @@ export default async function WhiteLabelPortal({
       </div>
       <CheckPage />
       <p className="mx-auto max-w-5xl px-4 pb-8 text-xs text-slate-400">
-        Powered by Battery Compliance Checker.
+        Powered by ClearToShip.
       </p>
     </div>
   );

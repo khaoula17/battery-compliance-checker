@@ -31,6 +31,12 @@ function resolveConfig(input: ShipmentInput): ConfigRule {
   return cfg;
 }
 
+/** Whether the size input needed to classify is present and valid (> 0, finite). */
+export function hasValidSize(input: ShipmentInput): boolean {
+  const v = input.chemistry === "ion" ? input.whPerUnit : input.lithiumContentG;
+  return typeof v === "number" && Number.isFinite(v) && v > 0;
+}
+
 /** True when the item exceeds the Section II size threshold. */
 export function isOverThreshold(input: ShipmentInput): boolean {
   const chem = rules.chemistries[input.chemistry];
@@ -80,7 +86,17 @@ export function classify(input: ShipmentInput): Classification {
     rules.sectionII.availableForConfigurations.includes(input.configuration);
 
   let section: Classification["section"];
-  if (isStandalone) {
+  if (!hasValidSize(input)) {
+    // FAIL SAFE: without a valid Wh / lithium-content value we cannot classify.
+    // Never default to the least-regulated section — return UNKNOWN (treated as
+    // fully regulated) so we never under-classify. The validator flags the
+    // missing value as a blocking error.
+    section = "UNKNOWN";
+  } else if (input.condition === "prototype") {
+    // Prototype / low-production must ship fully regulated (Section IA / I) with
+    // competent-authority approval — force it regardless of size.
+    section = isStandalone ? "IA" : "I";
+  } else if (isStandalone) {
     // No Section II for standalone since 2022 → always fully regulated.
     section = overThreshold ? "IA" : "IB";
   } else {
@@ -90,6 +106,8 @@ export function classify(input: ShipmentInput): Classification {
     section = overThreshold || overQty || !sectionIIAvailable ? "I" : "II";
   }
 
+  // Section II is the only excepted case; everything else (incl. UNKNOWN) is
+  // treated as fully regulated so the output never under-states requirements.
   const fullyRegulated = section !== "II";
 
   // Marks & labels per section:

@@ -125,3 +125,27 @@ describe("classify — section, DGD, marks & labels", () => {
     expect(c.citations[0].url).toMatch(/^https?:\/\//);
   });
 });
+
+describe("classify — fail-safe & prototype (safety)", () => {
+  it("missing Wh (ion) -> section UNKNOWN, fully regulated (never under-classifies)", () => {
+    const c = classify({ chemistry: "ion", configuration: "standalone", itemType: "battery" });
+    expect(c.section).toBe("UNKNOWN");
+    expect(c.fullyRegulated).toBe(true);
+    expect(c.dgdRequired).toBe(true);
+  });
+  it("zero or negative Wh is treated as missing -> UNKNOWN", () => {
+    expect(classify({ chemistry: "ion", configuration: "standalone", itemType: "battery", whPerUnit: 0 }).section).toBe("UNKNOWN");
+    expect(classify({ chemistry: "ion", configuration: "standalone", itemType: "battery", whPerUnit: -5 }).section).toBe("UNKNOWN");
+  });
+  it("missing lithium content (metal) -> UNKNOWN", () => {
+    expect(classify({ chemistry: "metal", configuration: "standalone", itemType: "battery" }).section).toBe("UNKNOWN");
+  });
+  it("prototype standalone forces Section IA regardless of size", () => {
+    const c = classify({ chemistry: "ion", configuration: "standalone", itemType: "battery", whPerUnit: 10, condition: "prototype" });
+    expect(c.section).toBe("IA");
+  });
+  it("prototype in equipment forces Section I", () => {
+    const c = classify({ chemistry: "ion", configuration: "contained_in_equipment", itemType: "battery", whPerUnit: 10, condition: "prototype" });
+    expect(c.section).toBe("I");
+  });
+});

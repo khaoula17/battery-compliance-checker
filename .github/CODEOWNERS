@@ -1,0 +1,8 @@
+# Require the owner's review for changes to the core ruleset and engine.
+# Replace @your-github-username with your actual GitHub handle.
+# Then enable branch protection on GitHub: Settings → Branches → protect `main` →
+# "Require a pull request before merging" + "Require review from Code Owners".
+
+/lib/compliance/rules/**      @your-github-username
+/lib/compliance/classifier.ts @your-github-username
+/lib/compliance/validator.ts  @your-github-username

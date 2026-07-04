@@ -1,8 +1,8 @@
 {
-  "version": "2026.1",
+  "version": "2026.2",
   "edition": "IATA DGR 67th Edition (2026)",
   "effectiveDate": "2026-01-01",
-  "lastReviewed": "2026-06-30",
+  "lastReviewed": "2026-07-04",
   "disclaimer": "Simplified ruleset for pre-flight checking only. Always verify against the current full IATA DGR / 49 CFR and applicable operator & state variations before tendering. A trained, certified shipper must sign the Shipper's Declaration.",
   "chemistries": {
     "ion": {

@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   if (!supabase) {
     return (
@@ -41,6 +42,7 @@ export default function LoginPage() {
   }
 
   async function google() {
+    if (!agreed) return;
     await supabase!.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${location.origin}/auth/callback` },
@@ -66,10 +68,25 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
+          <label className="flex items-start gap-2 text-xs text-slate-600">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-0.5"
+            />
+            <span>
+              I agree to the{" "}
+              <a href="/terms" target="_blank" className="text-brand underline">Terms of Service</a>{" "}
+              and{" "}
+              <a href="/privacy" target="_blank" className="text-brand underline">Privacy Policy</a>,
+              and understand this is a pre-check tool, not legal advice.
+            </span>
+          </label>
           <button
             type="submit"
-            disabled={loading}
-            className="w-full rounded-md bg-brand px-4 py-2.5 text-white font-medium hover:bg-brand-dark disabled:opacity-60"
+            disabled={loading || !agreed}
+            className="w-full rounded-md bg-brand px-4 py-2.5 text-white font-medium hover:bg-brand-dark disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? "Sending…" : "Email me a magic link"}
           </button>
@@ -77,18 +94,18 @@ export default function LoginPage() {
         </form>
       )}
 
-      {process.env.NEXT_PUBLIC_ENABLE_GOOGLE === "true" && (
-        <>
-          <div className="my-6 flex items-center gap-3 text-xs text-slate-400">
-            <span className="h-px flex-1 bg-slate-200" /> or <span className="h-px flex-1 bg-slate-200" />
-          </div>
-          <button
-            onClick={google}
-            className="w-full rounded-md border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-slate-400"
-          >
-            Continue with Google
-          </button>
-        </>
+      <div className="my-6 flex items-center gap-3 text-xs text-slate-400">
+        <span className="h-px flex-1 bg-slate-200" /> or <span className="h-px flex-1 bg-slate-200" />
+      </div>
+      <button
+        onClick={google}
+        disabled={!agreed}
+        className="w-full rounded-md border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-slate-400 disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        Continue with Google
+      </button>
+      {!agreed && (
+        <p className="mt-2 text-center text-xs text-slate-400">Accept the terms above to continue.</p>
       )}
     </div>
   );

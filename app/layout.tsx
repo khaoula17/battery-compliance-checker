@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: {
-    default: "Battery Compliance Checker — ship lithium batteries by air without rejections",
-    template: "%s · Battery Compliance Checker",
+    default: "ClearToShip — ship lithium batteries by air without rejections",
+    template: "%s · ClearToShip",
   },
   description:
     "Instantly check lithium-battery air shipments against IATA DGR. Get the UN number, packing instruction, required marks/labels and a clear pass/fail with fixes — before the carrier rejects your shipment. Free to try, no signup.",
@@ -42,7 +43,7 @@ export default function RootLayout({
           <header className="border-b border-slate-200 bg-white">
             <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
               <a href="/" className="font-semibold text-brand">
-                🔋 Battery Compliance Checker
+                🔋 ClearToShip
               </a>
               <nav className="text-sm text-slate-600 flex gap-4">
                 <a href="/check" className="hover:text-brand">Checker</a>
@@ -55,12 +56,18 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <footer className="border-t border-slate-200 bg-white">
             <div className="mx-auto max-w-5xl px-4 py-6 text-xs text-slate-500">
-              For pre-flight checking only. Not legal advice. A trained, certified
-              shipper is responsible for the final Shipper&apos;s Declaration. Always
-              verify against the current IATA DGR / 49 CFR and carrier variations.
+              <div className="mb-2 flex gap-4">
+                <a href="/terms" className="hover:text-brand">Terms</a>
+                <a href="/privacy" className="hover:text-brand">Privacy</a>
+                <a href="/check" className="hover:text-brand">Checker</a>
+              </div>
+              Built on the current IATA DGR / 49 CFR rules, with a citation for every
+              result. Your certified shipper reviews and signs the final declaration.
+              A pre-check tool — not legal advice.
             </div>
           </footer>
         </div>
+        <Analytics />
       </body>
     </html>
   );
