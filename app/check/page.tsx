@@ -139,13 +139,14 @@ export default function CheckPage() {
   }
 
   const isIon = form.chemistry === "ion";
+  const aiEnabled = process.env.NEXT_PUBLIC_AI_ENABLED === "true";
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <h1 className="text-2xl font-bold text-slate-900">Pre-flight check</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Enter shipment details. (Soon: upload a datasheet and the AI reader fills
-        this in for you.)
+        Enter your shipment details for an instant IATA classification, required
+        marks &amp; labels, and a clear pass/fail with fixes.
       </p>
       <div className="mt-2 flex flex-wrap items-center gap-3">
         <span className="inline-block rounded-full bg-teal-50 px-3 py-1 text-xs font-medium text-brand">
@@ -163,20 +164,22 @@ export default function CheckPage() {
       <div className="mt-8 grid gap-8 md:grid-cols-2">
         {/* Form */}
         <form onSubmit={submit} className="space-y-4 rounded-lg border border-slate-200 bg-white p-6">
-          <div className="rounded-md border border-dashed border-brand/40 bg-teal-50/50 p-3">
-            <label className="block text-sm font-medium text-slate-700">
-              ✨ Auto-fill from a datasheet / SDS (PDF or image)
-            </label>
-            <input
-              type="file"
-              accept="application/pdf,image/*"
-              onChange={uploadSds}
-              disabled={uploading}
-              className="mt-2 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-white"
-            />
-            {uploading && <p className="mt-1 text-xs text-slate-500">Reading document…</p>}
-            {uploadMsg && <p className="mt-1 text-xs text-slate-600">{uploadMsg}</p>}
-          </div>
+          {aiEnabled && (
+            <div className="rounded-md border border-dashed border-brand/40 bg-teal-50/50 p-3">
+              <label className="block text-sm font-medium text-slate-700">
+                ✨ Auto-fill from a datasheet / SDS (PDF or image)
+              </label>
+              <input
+                type="file"
+                accept="application/pdf,image/*"
+                onChange={uploadSds}
+                disabled={uploading}
+                className="mt-2 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-white"
+              />
+              {uploading && <p className="mt-1 text-xs text-slate-500">Reading document…</p>}
+              {uploadMsg && <p className="mt-1 text-xs text-slate-600">{uploadMsg}</p>}
+            </div>
+          )}
 
           <Field label="Chemistry">
             <select className="input" value={form.chemistry}

@@ -66,6 +66,15 @@ export function planFor(id: string | null | undefined): PlanDef {
   return PLANS[(id as Plan) ?? "free"] ?? PLANS.free;
 }
 
+/**
+ * Whether paid billing is turned on. While false (pre-launch), the app is fully
+ * free and generous: no usage limits, PDF open, and pricing shows "Start free"
+ * instead of checkout — so nothing ever errors before Stripe is wired.
+ */
+export function billingEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_BILLING_ENABLED === "true";
+}
+
 export function canDownloadPdf(plan: string | null | undefined): boolean {
   return planFor(plan).pdf;
 }

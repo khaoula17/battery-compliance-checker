@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { runCheck, type ShipmentInput } from "@/lib/compliance";
 import { generateDgdPdf, type DgdMeta } from "@/lib/pdf/dgd";
 import { getProfile } from "@/lib/db";
-import { canDownloadPdf } from "@/lib/plans";
+import { canDownloadPdf, billingEnabled } from "@/lib/plans";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 // POST /api/pdf  body: ShipmentInput & { meta?: DgdMeta }
@@ -15,8 +15,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  // Plan gating only when auth/billing is configured; otherwise open (dev/demo).
-  if (isSupabaseConfigured()) {
+  // Plan gating applies only once paid billing is live. Before launch, PDF is
+  // open to everyone so the free experience is complete and never errors.
+  if (billingEnabled() && isSupabaseConfigured()) {
     const profile = await getProfile();
     if (!profile) return NextResponse.json({ error: "Sign in to download PDFs." }, { status: 401 });
     if (!canDownloadPdf(profile.plan)) {

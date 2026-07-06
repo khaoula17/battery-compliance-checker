@@ -6,6 +6,7 @@ import { UpgradeButton } from "@/components/billing";
 // Pricing section with a monthly / annual toggle. PAYG is per-check (no annual).
 export function Pricing() {
   const [annual, setAnnual] = useState(false);
+  const billingLive = process.env.NEXT_PUBLIC_BILLING_ENABLED === "true";
 
   const tiers = [
     {
@@ -46,19 +47,26 @@ export function Pricing() {
       <h2 className="text-center text-2xl font-bold text-slate-900">Simple, honest pricing</h2>
       <p className="text-center text-sm text-slate-500 mt-1">Start free. Upgrade when it saves you time.</p>
 
-      <div className="mt-6 flex items-center justify-center gap-3 text-sm">
-        <span className={!annual ? "font-semibold text-slate-900" : "text-slate-500"}>Monthly</span>
-        <button
-          onClick={() => setAnnual((a) => !a)}
-          className="relative h-6 w-11 rounded-full bg-brand transition"
-          aria-label="Toggle annual billing"
-        >
-          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${annual ? "left-[22px]" : "left-0.5"}`} />
-        </button>
-        <span className={annual ? "font-semibold text-slate-900" : "text-slate-500"}>
-          Annual <span className="text-brand">· 2 months free</span>
-        </span>
-      </div>
+      {billingLive && (
+        <div className="mt-6 flex items-center justify-center gap-3 text-sm">
+          <span className={!annual ? "font-semibold text-slate-900" : "text-slate-500"}>Monthly</span>
+          <button
+            onClick={() => setAnnual((a) => !a)}
+            className="relative h-6 w-11 rounded-full bg-brand transition"
+            aria-label="Toggle annual billing"
+          >
+            <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${annual ? "left-[22px]" : "left-0.5"}`} />
+          </button>
+          <span className={annual ? "font-semibold text-slate-900" : "text-slate-500"}>
+            Annual <span className="text-brand">· 2 months free</span>
+          </span>
+        </div>
+      )}
+      {!billingLive && (
+        <p className="mt-4 text-center text-xs font-medium text-brand">
+          The checker is free to use right now — paid plans are launching soon.
+        </p>
+      )}
 
       <div className="mt-8 grid gap-6 sm:grid-cols-3">
         {tiers.map((t) => {
@@ -72,13 +80,22 @@ export function Pricing() {
                 <span className="text-sm text-slate-500"> {t.unit}</span>
               </div>
               <p className="mt-2 text-sm text-slate-600">{t.note}</p>
-              <UpgradeButton
-                plan={t.plan}
-                annual={showAnnual}
-                className={`mt-5 block w-full text-center rounded-md px-4 py-2.5 text-sm font-semibold ${t.highlight ? "bg-brand text-white hover:bg-brand-dark" : "border border-slate-300 text-slate-700 hover:border-slate-400"}`}
-              >
-                {t.cta}
-              </UpgradeButton>
+              {billingLive ? (
+                <UpgradeButton
+                  plan={t.plan}
+                  annual={showAnnual}
+                  className={`mt-5 block w-full text-center rounded-md px-4 py-2.5 text-sm font-semibold ${t.highlight ? "bg-brand text-white hover:bg-brand-dark" : "border border-slate-300 text-slate-700 hover:border-slate-400"}`}
+                >
+                  {t.cta}
+                </UpgradeButton>
+              ) : (
+                <a
+                  href="/check"
+                  className={`mt-5 block w-full text-center rounded-md px-4 py-2.5 text-sm font-semibold ${t.highlight ? "bg-brand text-white hover:bg-brand-dark" : "border border-slate-300 text-slate-700 hover:border-slate-400"}`}
+                >
+                  Start free →
+                </a>
+              )}
             </div>
           );
         })}

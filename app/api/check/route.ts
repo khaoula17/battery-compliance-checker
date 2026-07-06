@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { runCheck, type ShipmentInput } from "@/lib/compliance";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getProfile, countChecksThisMonth, saveCheck } from "@/lib/db";
-import { withinCheckLimit, planFor } from "@/lib/plans";
+import { withinCheckLimit, planFor, billingEnabled } from "@/lib/plans";
 
 // POST /api/check  — run a single pre-flight compliance check.
 // When auth is configured: enforces the plan's monthly limit and saves the
@@ -28,8 +28,9 @@ export async function POST(req: Request) {
     const profile = await getProfile();
     if (profile) {
       userId = profile.id;
-      const used = await countChecksThisMonth(profile.id);
-      if (!withinCheckLimit(profile.plan, used)) {
+      // Only enforce the monthly allowance once paid billing is live.
+      const used = billingEnabled() ? await countChecksThisMonth(profile.id) : 0;
+      if (billingEnabled() && !withinCheckLimit(profile.plan, used)) {
         const limit = planFor(profile.plan).monthlyChecks;
         return NextResponse.json(
           { error: `Monthly limit reached (${limit} checks on the ${planFor(profile.plan).name} plan). Upgrade to continue.`, code: "LIMIT_REACHED" },
