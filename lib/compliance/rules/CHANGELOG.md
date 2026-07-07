@@ -41,5 +41,20 @@ changes — all encoded thresholds/rules were verified correct & current):
 - **Citations:** air-mode prohibitions (forbidden conditions) now cite IATA
   guidance (A154) rather than the US 49 CFR ground reference.
 
+## 2026.3 — 2026-07-06
+Accuracy + coverage from a DG-reviewer pass (facts verified against IATA/FedEx/49 CFR):
+- **Sodium-ion added** (UN3551 / PI 976 standalone; UN3552 / PI 977 packed-with,
+  PI 978 contained-in). Identify-only: returns UN/PI and a manual-verification
+  warning — no lithium section/threshold or SoC logic applied (ICAO is silent on
+  SoC for PI 977/978).
+- **Wh-mark wording** clarified: US 49 CFR requires the case Wh marking since
+  10 May 2024 (confirmed); IATA by manufacture date.
+- **Prototype message** reconciled with classifier (Section IA standalone / I equipment).
+- **Section II (equipment)** warning kept; contained-in-equipment **marking-relief**
+  note added (≤4 cells / ≤2 batteries installed; button-cell exceptions).
+- **Special-provisions** reminder added for fully-regulated lithium (A88/A99/A154/A164/A181).
+- Confirmed correct (no change needed): standalone→IB/IA, marks per section
+  (II=mark; IB=mark+Class9+CAO; IA=Class9+CAO), UN3480/UN3090 Cargo Aircraft Only.
+
 ## [next] — YYYY-MM-DD
 - (Log the next change here when the 68th edition / an addendum lands.)

@@ -19,7 +19,7 @@ import rules from "../rules/li-rules.json";
 // ---------------------------------------------------------------------------
 
 const EXPECTED_HASH =
-  "51121bfe183eb837194f2d3e2599e09d2eb749e9d1b4d10d456605bd95b1bad0";
+  "dbdae21b413df83e568a14aa881e18e47ca0f6824266dd631c14cb99e3ff68fd";
 
 // Canonicalize (sort keys, recurse) so formatting/whitespace changes don't trip
 // the lock — only actual data changes do.

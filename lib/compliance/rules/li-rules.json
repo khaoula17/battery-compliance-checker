@@ -1,8 +1,8 @@
 {
-  "version": "2026.2",
+  "version": "2026.3",
   "edition": "IATA DGR 67th Edition (2026)",
   "effectiveDate": "2026-01-01",
-  "lastReviewed": "2026-07-04",
+  "lastReviewed": "2026-07-06",
   "disclaimer": "Simplified ruleset for pre-flight checking only. Always verify against the current full IATA DGR / 49 CFR and applicable operator & state variations before tendering. A trained, certified shipper must sign the Shipper's Declaration.",
   "chemistries": {
     "ion": {
@@ -23,6 +23,16 @@
         "standalone": { "un": "UN3090", "psn": "Lithium metal batteries", "pi": "968" },
         "packed_with_equipment": { "un": "UN3091", "psn": "Lithium metal batteries packed with equipment", "pi": "969" },
         "contained_in_equipment": { "un": "UN3091", "psn": "Lithium metal batteries contained in equipment", "pi": "970" }
+      }
+    },
+    "sodium": {
+      "label": "Sodium-ion",
+      "manualClassification": true,
+      "note": "Sodium-ion battery provisions differ from lithium. ICAO is silent on state of charge for sodium-ion with equipment (PI 977/978). This tool identifies the UN number and packing instruction; full section, quantity, and packaging classification must be verified manually against the current DGR.",
+      "configurations": {
+        "standalone": { "un": "UN3551", "psn": "Sodium ion batteries", "pi": "976" },
+        "packed_with_equipment": { "un": "UN3552", "psn": "Sodium ion batteries packed with equipment", "pi": "977" },
+        "contained_in_equipment": { "un": "UN3552", "psn": "Sodium ion batteries contained in equipment", "pi": "978" }
       }
     }
   },
@@ -87,6 +97,8 @@
     "soc_2026": { "ref": "IATA DGR 67th ed. (2026) — SoC requirement expanded to UN3481 with equipment (>2.7 Wh)", "url": "https://www.hazmatuniversity.com/news/lithium-battery-air-transport-2026-iata-and-icao-compliance-guide/" },
     "cfr_173_185": { "ref": "49 CFR 173.185 — Lithium cells and batteries", "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-I/subchapter-C/part-173/subpart-E/section-173.185" },
     "fedex_batteries": { "ref": "FedEx — How to ship batteries", "url": "https://www.fedex.com/en-us/shipping/how-to-ship-batteries.html" },
-    "iata_training": { "ref": "IATA — DG training & certification (recurrent every 24 months)", "url": "https://www.iata.org/en/publications/newsletters/iata-knowledge-hub/how-to-get-trained-and-certified-on-dangerous-goods-transported-by-air/" }
+    "iata_training": { "ref": "IATA — DG training & certification (recurrent every 24 months)", "url": "https://www.iata.org/en/publications/newsletters/iata-knowledge-hub/how-to-get-trained-and-certified-on-dangerous-goods-transported-by-air/" },
+    "sodium": { "ref": "IATA/ICAO — Sodium-ion batteries UN3551/UN3552, PI 976/977/978", "url": "https://www.iata.org/contentassets/05e6d8742b0047259bf3a700bc9d42b9/lithium-battery-guidance-document.pdf" },
+    "special_provisions": { "ref": "IATA DGR — Special Provisions for lithium batteries (A88, A99, A154, A164, A181, A213)", "url": "https://www.iata.org/contentassets/05e6d8742b0047259bf3a700bc9d42b9/lithium-battery-guidance-document.pdf" }
   }
 }

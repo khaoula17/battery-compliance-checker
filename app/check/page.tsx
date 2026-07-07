@@ -139,6 +139,7 @@ export default function CheckPage() {
   }
 
   const isIon = form.chemistry === "ion";
+  const isMetal = form.chemistry === "metal";
   const aiEnabled = process.env.NEXT_PUBLIC_AI_ENABLED === "true";
 
   return (
@@ -186,6 +187,7 @@ export default function CheckPage() {
               onChange={(e) => set("chemistry", e.target.value as ShipmentInput["chemistry"])}>
               <option value="ion">Lithium-ion</option>
               <option value="metal">Lithium-metal</option>
+              <option value="sodium">Sodium-ion</option>
             </select>
           </Field>
 
@@ -206,15 +208,15 @@ export default function CheckPage() {
             </select>
           </Field>
 
-          {isIon ? (
-            <Field label="Watt-hours per unit (Wh)">
-              <input className="input" type="number" step="0.1" value={form.whPerUnit ?? ""}
-                onChange={(e) => set("whPerUnit", e.target.value === "" ? undefined : Number(e.target.value))} />
-            </Field>
-          ) : (
+          {isMetal ? (
             <Field label="Lithium content per unit (g)">
               <input className="input" type="number" step="0.1" value={form.lithiumContentG ?? ""}
                 onChange={(e) => set("lithiumContentG", e.target.value === "" ? undefined : Number(e.target.value))} />
+            </Field>
+          ) : (
+            <Field label={isIon ? "Watt-hours per unit (Wh)" : "Watt-hours per unit (Wh) — optional"}>
+              <input className="input" type="number" step="0.1" value={form.whPerUnit ?? ""}
+                onChange={(e) => set("whPerUnit", e.target.value === "" ? undefined : Number(e.target.value))} />
             </Field>
           )}
 

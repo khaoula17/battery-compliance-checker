@@ -80,6 +80,27 @@ export function exceedsSectionIIQuantity(input: ShipmentInput): boolean {
 
 export function classify(input: ShipmentInput): Classification {
   const cfg = resolveConfig(input);
+
+  // Sodium-ion: identify UN number + packing instruction only. Its provisions
+  // differ from lithium (and ICAO is silent on state of charge for PI 977/978),
+  // so we do NOT apply lithium section/threshold logic. Treated conservatively
+  // as fully regulated pending manual verification (validator adds guidance).
+  if (input.chemistry === "sodium") {
+    return {
+      unNumber: cfg.un,
+      properShippingName: cfg.psn,
+      packingInstruction: cfg.pi,
+      section: "UNKNOWN",
+      fullyRegulated: true,
+      dgdRequired: true,
+      requiredMarks: [],
+      requiredLabels: ["Class 9 hazard label"],
+      overThreshold: false,
+      cargoAircraftOnly: false,
+      citations: [cite("sodium")],
+    };
+  }
+
   const overThreshold = isOverThreshold(input);
   const isStandalone = input.configuration === "standalone";
   const sectionIIAvailable =

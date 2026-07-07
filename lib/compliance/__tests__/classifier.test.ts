@@ -1,4 +1,5 @@
 import { classify, isOverThreshold } from "../classifier";
+import { runCheck } from "../index";
 import type { ShipmentInput } from "../types";
 
 const base: ShipmentInput = {
@@ -123,6 +124,32 @@ describe("classify — section, DGD, marks & labels", () => {
     const c = classify({ ...base });
     expect(c.citations.length).toBeGreaterThan(0);
     expect(c.citations[0].url).toMatch(/^https?:\/\//);
+  });
+});
+
+describe("classify — sodium-ion (identify only)", () => {
+  it("sodium standalone -> UN3551 / PI 976, manual (UNKNOWN section)", () => {
+    const c = classify({ chemistry: "sodium", configuration: "standalone", itemType: "battery" });
+    expect(c.unNumber).toBe("UN3551");
+    expect(c.packingInstruction).toBe("976");
+    expect(c.section).toBe("UNKNOWN");
+    expect(c.fullyRegulated).toBe(true);
+  });
+  it("sodium packed with equipment -> UN3552 / PI 977", () => {
+    const c = classify({ chemistry: "sodium", configuration: "packed_with_equipment", itemType: "battery" });
+    expect(c.unNumber).toBe("UN3552");
+    expect(c.packingInstruction).toBe("977");
+  });
+  it("sodium contained in equipment -> UN3552 / PI 978", () => {
+    const c = classify({ chemistry: "sodium", configuration: "contained_in_equipment", itemType: "battery" });
+    expect(c.packingInstruction).toBe("978");
+  });
+  it("does not apply lithium SoC/threshold logic to sodium", () => {
+    const result = runCheck({ chemistry: "sodium", configuration: "standalone", itemType: "battery" });
+    const codes = result.findings.map((f) => f.code);
+    expect(codes).toContain("SODIUM_MANUAL");
+    expect(codes).not.toContain("SOC_OVER_LIMIT");
+    expect(codes).not.toContain("MISSING_WH");
   });
 });
 

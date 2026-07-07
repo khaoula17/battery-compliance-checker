@@ -17,6 +17,8 @@ export interface ChemistryRule {
   batteryThresholdWh?: number;
   cellThresholdG?: number;
   batteryThresholdG?: number;
+  manualClassification?: boolean;
+  note?: string;
   configurations: Record<string, ConfigRule>;
 }
 

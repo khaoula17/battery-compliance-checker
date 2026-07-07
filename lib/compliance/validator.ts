@@ -40,7 +40,7 @@ export function validate(
     findings.push({
       code: "CONDITION_APPROVAL_REQUIRED",
       severity: "error",
-      message: "Prototype / low-production-run lithium batteries require competent-authority approval and must ship as Section IA.",
+      message: "Prototype / low-production-run lithium batteries require competent-authority approval and must ship fully regulated (Section IA for standalone, Section I in/with equipment).",
       fix: "Obtain State-of-Origin / competent-authority approval before shipping.",
       citation: cite("iata_li_guidance"),
     });
@@ -54,6 +54,17 @@ export function validate(
       message: `${cls.unNumber} is forbidden on passenger aircraft — you selected passenger aircraft.`,
       fix: "Ship on a cargo aircraft (CAO), or choose a service that offers cargo-aircraft transport.",
       citation: cite("iata_li_guidance"),
+    });
+  }
+
+  // --- Sodium-ion: identification only ---
+  if (input.chemistry === "sodium") {
+    findings.push({
+      code: "SODIUM_MANUAL",
+      severity: "warning",
+      message: `${cls.unNumber} (PI ${cls.packingInstruction}) identified. Sodium-ion provisions differ from lithium and ICAO is silent on state of charge for PI 977/978 — this tool provides identification only; verify section, quantity, and packaging manually against the current DGR.`,
+      fix: "Have a trained shipper verify the full sodium-ion classification against the DGR.",
+      citation: cite("sodium"),
     });
   }
 
@@ -96,12 +107,13 @@ export function validate(
     });
   }
 
-  // --- Wh mark on case (Li-ion, required after 10 May 2024) ---
+  // --- Wh mark on case (Li-ion). 49 CFR 173.185 requires the Wh rating marked
+  //     on the case since 10 May 2024; IATA requires it by manufacture date. ---
   if (input.chemistry === "ion" && input.whMarkedOnCase === false) {
     findings.push({
       code: "WH_NOT_MARKED",
       severity: "warning",
-      message: "Watt-hour rating is not marked on the battery case (required for lithium-ion cells/batteries).",
+      message: "Watt-hour rating is not marked on the battery case. Marking the Wh rating on the case is required for lithium-ion cells/batteries (US 49 CFR since 10 May 2024; IATA by manufacture date).",
       fix: "Ensure the Wh rating is marked on the battery, or confirm with the manufacturer.",
       citation: cite("cfr_173_185"),
     });
@@ -194,6 +206,26 @@ export function validate(
       message: "Section II for batteries with equipment has specific quantity limits (generally the number of batteries required to power the device plus at most 2 spare sets, with per-package and consignment limits) that this tool does not fully calculate.",
       fix: "Manually verify the package is within the Section II quantity limits for this packing instruction before shipping.",
       citation: cite("iata_li_guidance"),
+    });
+  }
+
+  // --- Contained-in-equipment marking relief (button/installed cells) ---
+  if (input.configuration === "contained_in_equipment") {
+    findings.push({
+      code: "EQUIPMENT_MARKING_RELIEF",
+      severity: "info",
+      message: "Equipment containing no more than 4 cells or 2 batteries installed may qualify for marking relief (and low-power/button cells have further exceptions). Check whether the relief applies.",
+      citation: cite("iata_li_guidance"),
+    });
+  }
+
+  // --- Special provisions reminder (fully regulated lithium) ---
+  if (cls.fullyRegulated && input.chemistry !== "sodium") {
+    findings.push({
+      code: "SPECIAL_PROVISIONS",
+      severity: "info",
+      message: "Check any applicable Special Provisions for your UN number and route (e.g. A88/A99 approvals, A154 damaged/defective, A164, A181).",
+      citation: cite("special_provisions"),
     });
   }
 

@@ -2,7 +2,7 @@
 // These are intentionally framework-free so the engine can be unit-tested
 // and reused from API routes, the UI, or a future CLI.
 
-export type Chemistry = "ion" | "metal";
+export type Chemistry = "ion" | "metal" | "sodium";
 
 export type Configuration =
   | "standalone" // shipped by themselves (UN3480 / UN3090)
