@@ -180,7 +180,7 @@ export function validate(
       findings.push({
         code: "OPERATOR_IA_PREAPPROVAL",
         severity: "warning",
-        message: `${op.label} requires pre-approval (${op.sectionIAPreApproval}) for fully regulated lithium shipments.`,
+        message: `${op.label} requires pre-approval (${op.sectionIAPreApproval}) for fully regulated battery shipments.`,
         fix: "Request carrier pre-approval before shipping.",
         citation: cite("fedex_batteries"),
       });

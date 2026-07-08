@@ -48,6 +48,7 @@ export default function RootLayout({
               <nav className="text-sm text-slate-600 flex gap-4">
                 <a href="/check" className="hover:text-brand">Checker</a>
                 <a href="/#pricing" className="hover:text-brand">Pricing</a>
+                <a href="/changelog" className="hover:text-brand">Updates</a>
                 <a href="/dashboard" className="hover:text-brand">Dashboard</a>
                 <a href="/login" className="hover:text-brand">Sign in</a>
               </nav>
@@ -56,10 +57,12 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <footer className="border-t border-slate-200 bg-white">
             <div className="mx-auto max-w-5xl px-4 py-6 text-xs text-slate-500">
-              <div className="mb-2 flex gap-4">
+              <div className="mb-2 flex flex-wrap gap-4">
+                <a href="/check" className="hover:text-brand">Checker</a>
+                <a href="/batch" className="hover:text-brand">Batch</a>
+                <a href="/changelog" className="hover:text-brand">Updates</a>
                 <a href="/terms" className="hover:text-brand">Terms</a>
                 <a href="/privacy" className="hover:text-brand">Privacy</a>
-                <a href="/check" className="hover:text-brand">Checker</a>
               </div>
               Built on the current IATA DGR / 49 CFR rules, with a citation for every
               result. Your certified shipper reviews and signs the final declaration.
