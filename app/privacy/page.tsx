@@ -9,10 +9,13 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-800">
-        Template for review. Adapt to your jurisdiction (GDPR/CCPA etc.) with a
-        lawyer before charging. Fill placeholders in <code>lib/legal.ts</code>.
-      </div>
+      {LEGAL.company.includes("[") && (
+        <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-800">
+          Setup note (only you see this until configured): set your company info via
+          env vars and have a lawyer review before charging. This banner disappears
+          once the company name is set.
+        </div>
+      )}
 
       <h1 className="text-2xl font-bold text-slate-900 mt-6">Privacy Policy</h1>
       <p className="text-sm text-slate-500">Last updated: {LEGAL.lastUpdated}</p>
