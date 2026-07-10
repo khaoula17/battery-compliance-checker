@@ -41,11 +41,11 @@ export default function RootLayout({
       <body>
         <div className="min-h-screen flex flex-col">
           <header className="border-b border-slate-200 bg-white">
-            <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
+            <div className="mx-auto max-w-5xl px-4 py-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
               <a href="/" className="font-semibold text-brand">
                 🔋 ClearToShip
               </a>
-              <nav className="text-sm text-slate-600 flex gap-4">
+              <nav className="text-sm text-slate-600 flex flex-wrap gap-x-4 gap-y-1">
                 <a href="/check" className="hover:text-brand">Checker</a>
                 <a href="/#pricing" className="hover:text-brand">Pricing</a>
                 <a href="/changelog" className="hover:text-brand">Updates</a>

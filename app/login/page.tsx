@@ -32,13 +32,25 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const { error } = await supabase!.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${location.origin}/auth/callback` },
-    });
-    setLoading(false);
-    if (error) setError(error.message);
-    else setSent(true);
+    try {
+      const { error } = await supabase!.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: `${location.origin}/auth/callback` },
+      });
+      setLoading(false);
+      if (error) setError(error.message);
+      else setSent(true);
+    } catch (err) {
+      setLoading(false);
+      const msg = err instanceof Error ? err.message : String(err);
+      if (/fetch|network/i.test(msg)) {
+        setError(
+          "Couldn't reach the sign-in server. The Supabase URL is likely misconfigured — open /api/health to check (supabaseReachable should be true)."
+        );
+      } else {
+        setError(msg);
+      }
+    }
   }
 
   async function google() {

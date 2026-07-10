@@ -1,4 +1,5 @@
 import { Pricing } from "@/components/Pricing";
+import { TESTIMONIALS } from "@/lib/testimonials";
 
 export default function Home() {
   return (
@@ -92,6 +93,23 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials — renders only when TESTIMONIALS has real entries */}
+      {TESTIMONIALS.length > 0 && (
+        <section className="mx-auto max-w-5xl px-4 py-16">
+          <h2 className="text-center text-2xl font-bold text-slate-900">Trusted by shippers who feel the pain</h2>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {TESTIMONIALS.map((t, i) => (
+              <figure key={i} className="rounded-lg border border-slate-200 bg-white p-5">
+                <blockquote className="text-sm text-slate-700">&ldquo;{t.quote}&rdquo;</blockquote>
+                <figcaption className="mt-3 text-xs text-slate-500">
+                  <span className="font-medium text-slate-700">{t.name}</span> — {t.role}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Pricing */}
       <Pricing />
