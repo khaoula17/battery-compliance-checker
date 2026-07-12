@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
+import { AuthNav } from "@/components/AuthNav";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -49,8 +50,7 @@ export default function RootLayout({
                 <a href="/check" className="hover:text-brand">Checker</a>
                 <a href="/#pricing" className="hover:text-brand">Pricing</a>
                 <a href="/changelog" className="hover:text-brand">Updates</a>
-                <a href="/dashboard" className="hover:text-brand">Dashboard</a>
-                <a href="/login" className="hover:text-brand">Sign in</a>
+                <AuthNav />
               </nav>
             </div>
           </header>
