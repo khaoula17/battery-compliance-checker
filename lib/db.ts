@@ -5,6 +5,38 @@
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import type { CheckResult, ShipmentInput } from "@/lib/compliance/types";
 import type { Plan } from "@/lib/plans";
+import { sendEmail, isEmailConfigured } from "@/lib/email";
+
+// Fire welcome + founder-notification emails on first signup. Never throws
+// (email is best-effort and must not break login). No-op until Resend is set.
+async function onNewSignup(email: string | null): Promise<void> {
+  if (!isEmailConfigured()) return;
+  try {
+    if (email) {
+      await sendEmail({
+        to: email,
+        subject: "Welcome to ClearToShip",
+        html:
+          "<p>Welcome to ClearToShip 👋</p>" +
+          "<p>You can now save your lithium-battery compliance checks and download PDFs. " +
+          'Start a check any time at <a href="https://cleartoship.com/check">/check</a>.</p>' +
+          "<p>Reply to this email if you need anything — we read every message.</p>",
+      });
+    }
+    const notify = (process.env.NOTIFY_EMAIL || process.env.ADMIN_EMAILS || "")
+      .split(",")[0]
+      .trim();
+    if (notify) {
+      await sendEmail({
+        to: notify,
+        subject: "🎉 New ClearToShip signup",
+        html: `<p>New signup: <strong>${email ?? "unknown"}</strong></p>`,
+      });
+    }
+  } catch {
+    // best-effort only
+  }
+}
 
 export interface Profile {
   id: string;
@@ -45,9 +77,10 @@ export async function getProfile(): Promise<Profile | null> {
 
   if (data) return data as Profile;
 
-  // First login — create a free profile.
+  // First login — create a free profile + send welcome/notification emails.
   const fresh = { id: user.id, email: user.email ?? null, plan: "free" as Plan, stripe_customer_id: null };
   await supabase.from("profiles").insert(fresh);
+  await onNewSignup(fresh.email);
   return fresh;
 }
 

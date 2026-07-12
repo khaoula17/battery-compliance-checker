@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         status: "not_configured",
-        message: "Set ANTHROPIC_API_KEY (recommended, supports PDF) or OPENAI_API_KEY to enable the AI reader.",
+        message: "Set GEMINI_API_KEY (free, reads PDFs) or ANTHROPIC_API_KEY, or OPENAI_API_KEY (images only), to enable the AI reader.",
       },
       { status: 501 }
     );

@@ -26,8 +26,9 @@ Return ONLY a JSON object with these keys (use null when unknown):
 }
 Do not include any prose, explanation, or markdown — only the JSON object.`;
 
-export function aiProvider(): "anthropic" | "openai" | null {
+export function aiProvider(): "anthropic" | "gemini" | "openai" | null {
   if (process.env.ANTHROPIC_API_KEY) return "anthropic";
+  if (process.env.GEMINI_API_KEY) return "gemini"; // free tier, reads PDF + images
   if (process.env.OPENAI_API_KEY) return "openai";
   return null;
 }
@@ -90,9 +91,36 @@ export async function extractFromDocument(
     return parseJson(textOut);
   }
 
-  // OpenAI (images only — for PDFs prefer Anthropic).
+  if (provider === "gemini") {
+    // Google Gemini (free tier). Reads PDFs AND images via inline_data.
+    const model = process.env.AI_MODEL || "gemini-2.0-flash";
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { inline_data: { mime_type: mediaType, data: base64 } },
+                { text: `${SYSTEM}\n\nExtract the fields as specified. Return only the JSON object.` },
+              ],
+            },
+          ],
+          generationConfig: { responseMimeType: "application/json", maxOutputTokens: 1024 },
+        }),
+      }
+    );
+    if (!res.ok) throw new Error(`Gemini error ${res.status}: ${await res.text()}`);
+    const data = await res.json();
+    const textOut = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    return parseJson(textOut);
+  }
+
+  // OpenAI (images only — for PDFs prefer Anthropic or Gemini).
   if (mediaType === "application/pdf") {
-    throw new Error("PDF extraction needs ANTHROPIC_API_KEY (OpenAI path supports images only).");
+    throw new Error("PDF extraction needs ANTHROPIC_API_KEY or GEMINI_API_KEY (OpenAI path supports images only).");
   }
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
