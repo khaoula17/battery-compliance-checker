@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { CheckResult, ShipmentInput } from "@/lib/compliance/types";
+import { RequiredMarks } from "@/components/MarkIcons";
 
 const sectionBadge: Record<string, string> = {
   II: "bg-emerald-100 text-emerald-800",
@@ -36,6 +37,7 @@ export default function CheckPage() {
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadMsg, setUploadMsg] = useState<string | null>(null);
+  const [meta, setMeta] = useState({ shipperName: "", consigneeName: "", reference: "" });
 
   function set<K extends keyof ShipmentInput>(key: K, value: ShipmentInput[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -122,7 +124,7 @@ export default function CheckPage() {
     const res = await fetch("/api/pdf", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, meta }),
     });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -275,6 +277,20 @@ export default function CheckPage() {
             Package exceeds Section II quantity limit
           </label>
 
+          <details className="rounded-md border border-slate-200 p-3">
+            <summary className="cursor-pointer text-sm font-medium text-slate-700">
+              Shipper / consignee for the PDF (optional)
+            </summary>
+            <div className="mt-3 space-y-2">
+              <input className="input" placeholder="Shipper name" value={meta.shipperName}
+                onChange={(e) => setMeta((m) => ({ ...m, shipperName: e.target.value }))} />
+              <input className="input" placeholder="Consignee name" value={meta.consigneeName}
+                onChange={(e) => setMeta((m) => ({ ...m, consigneeName: e.target.value }))} />
+              <input className="input" placeholder="Reference / AWB" value={meta.reference}
+                onChange={(e) => setMeta((m) => ({ ...m, reference: e.target.value }))} />
+            </div>
+          </details>
+
           <button type="submit" disabled={loading}
             className="w-full rounded-md bg-brand px-4 py-2.5 text-white font-medium hover:bg-brand-dark disabled:opacity-60">
             {loading ? "Checking…" : "Run check"}
@@ -317,6 +333,14 @@ export default function CheckPage() {
                   <dt className="text-slate-500">Labels</dt><dd>{result.classification.requiredLabels.join(", ") || "—"}</dd>
                 </dl>
               </div>
+
+              {(result.classification.requiredMarks.length > 0 || result.classification.requiredLabels.length > 0) && (
+                <div className="rounded-lg border border-slate-200 bg-white p-4">
+                  <h3 className="mb-3 text-sm font-semibold text-slate-900">Required on the package</h3>
+                  <RequiredMarks marks={result.classification.requiredMarks} labels={result.classification.requiredLabels} />
+                  <p className="mt-3 text-xs text-slate-400">Illustrative — apply the correct compliant printed marks/labels per the DGR.</p>
+                </div>
+              )}
 
               {result.findings.length > 0 && (
                 <div className="space-y-2">
