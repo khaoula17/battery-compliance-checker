@@ -60,6 +60,7 @@ export default function RootLayout({
               <div className="mb-2 flex flex-wrap gap-4">
                 <a href="/check" className="hover:text-brand">Checker</a>
                 <a href="/batch" className="hover:text-brand">Batch</a>
+                <a href="/compare" className="hover:text-brand">Compare</a>
                 <a href="/changelog" className="hover:text-brand">Updates</a>
                 <a href="/terms" className="hover:text-brand">Terms</a>
                 <a href="/privacy" className="hover:text-brand">Privacy</a>

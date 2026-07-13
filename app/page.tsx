@@ -91,6 +91,9 @@ export default function Home() {
               </tbody>
             </table>
           </div>
+          <p className="mt-4 text-center text-sm">
+            <a href="/compare" className="text-brand font-medium hover:underline">See the full comparison →</a>
+          </p>
         </div>
       </section>
 
