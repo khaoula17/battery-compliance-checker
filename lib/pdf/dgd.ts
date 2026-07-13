@@ -99,13 +99,62 @@ export async function generateDgdPdf(
     y -= 16;
   }
 
+  // Required marks & labels — illustrative graphics
+  const drawMarkBox = (item: string, x: number, yb: number, w: number, h: number) => {
+    const cx = x + w / 2;
+    if (item.includes("Lithium battery mark")) {
+      page.drawRectangle({ x, y: yb, width: w, height: h, color: rgb(1, 1, 1), borderColor: rgb(0.82, 0.07, 0.07), borderWidth: 2 });
+      page.drawRectangle({ x: x + 10, y: yb + h - 20, width: 18, height: 9, borderColor: BLACK, borderWidth: 1 });
+      page.drawRectangle({ x: x + 28, y: yb + h - 18, width: 2, height: 5, color: BLACK });
+      page.drawLine({ start: { x: x + 34, y: yb + h - 10 }, end: { x: x + 31, y: yb + h - 16 }, thickness: 1.5, color: rgb(0.95, 0.7, 0.1) });
+      page.drawLine({ start: { x: x + 31, y: yb + h - 16 }, end: { x: x + 36, y: yb + h - 16 }, thickness: 1.5, color: rgb(0.95, 0.7, 0.1) });
+      page.drawLine({ start: { x: x + 36, y: yb + h - 16 }, end: { x: x + 33, y: yb + h - 22 }, thickness: 1.5, color: rgb(0.95, 0.7, 0.1) });
+      page.drawText("Lithium Battery", { x: x + 8, y: yb + 12, size: 8, font: bold, color: BLACK });
+      page.drawText("Handle with care", { x: x + 8, y: yb + 3, size: 6, font, color: GREY });
+    } else if (item.includes("Class 9")) {
+      page.drawRectangle({ x, y: yb, width: w, height: h, color: rgb(1, 1, 1), borderColor: rgb(0.8, 0.8, 0.85), borderWidth: 1 });
+      const ccy = yb + h / 2 + 2;
+      const hh = 15;
+      const pts = [ { x: cx, y: ccy + hh }, { x: cx + hh, y: ccy }, { x: cx, y: ccy - hh }, { x: cx - hh, y: ccy } ];
+      for (let k = 0; k < 4; k++) page.drawLine({ start: pts[k], end: pts[(k + 1) % 4], thickness: 1.2, color: BLACK });
+      page.drawLine({ start: { x: cx - 8, y: ccy + 7 }, end: { x: cx + 8, y: ccy + 7 }, thickness: 1, color: BLACK });
+      page.drawLine({ start: { x: cx - 6, y: ccy + 4 }, end: { x: cx + 6, y: ccy + 4 }, thickness: 1, color: BLACK });
+      page.drawText("9", { x: cx - 3, y: ccy - 12, size: 11, font: bold, color: BLACK });
+      page.drawText("Class 9", { x: x + 8, y: yb + 4, size: 7, font, color: GREY });
+    } else if (item.includes("Cargo Aircraft Only")) {
+      page.drawRectangle({ x, y: yb, width: w, height: h, color: rgb(0.96, 0.62, 0.04), borderColor: BLACK, borderWidth: 1.5 });
+      page.drawText("CARGO", { x: x + 8, y: yb + h - 20, size: 10, font: bold, color: BLACK });
+      page.drawText("AIRCRAFT ONLY", { x: x + 8, y: yb + h - 34, size: 10, font: bold, color: BLACK });
+    } else {
+      page.drawRectangle({ x, y: yb, width: w, height: h, color: rgb(1, 1, 1), borderColor: rgb(0.8, 0.8, 0.85), borderWidth: 1 });
+      let ty = yb + h - 14;
+      for (const ln of wrap(ascii(item), 18)) { page.drawText(ln, { x: x + 6, y: ty, size: 7, font, color: BLACK }); ty -= 9; }
+    }
+  };
+
+  const markItems = [...c.requiredMarks, ...c.requiredLabels];
+  if (markItems.length > 0) {
+    y -= 10;
+    text("Required marks & labels", { font: bold, size: 12, color: TEAL });
+    const boxW = 104, boxH = 50, gap = 12;
+    const yb = y - 8 - boxH;
+    let mx = left;
+    for (const item of markItems.slice(0, 4)) {
+      drawMarkBox(item, mx, yb, boxW, boxH);
+      mx += boxW + gap;
+    }
+    y = yb - 10;
+    page.drawText("Illustrative — apply the correct compliant printed marks/labels per the DGR.", { x: left, y, size: 7, font, color: GREY });
+    y -= 8;
+  }
+
   // Shipment inputs
   y -= 8;
   text("Shipment", { font: bold, size: 12, color: TEAL });
   y -= 18;
   const i = result.input;
   const inputRows: [string, string][] = [
-    ["Chemistry", i.chemistry === "ion" ? "Lithium-ion" : "Lithium-metal"],
+    ["Chemistry", i.chemistry === "ion" ? "Lithium-ion" : i.chemistry === "metal" ? "Lithium-metal" : "Sodium-ion"],
     ["Configuration", i.configuration.replace(/_/g, " ")],
     ["Item type", i.itemType],
     ["Energy / content", i.whPerUnit != null ? `${i.whPerUnit} Wh` : i.lithiumContentG != null ? `${i.lithiumContentG} g Li` : "—"],
