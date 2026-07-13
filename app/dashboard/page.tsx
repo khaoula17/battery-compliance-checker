@@ -89,6 +89,7 @@ function DashboardView({
                 <th className="px-4 py-2 font-medium">Section</th>
                 <th className="px-4 py-2 font-medium">Carrier</th>
                 <th className="px-4 py-2 font-medium">Result</th>
+                <th className="px-4 py-2 font-medium"></th>
               </tr>
             </thead>
             <tbody>
@@ -102,6 +103,14 @@ function DashboardView({
                     <span className={c.passed ? "text-emerald-700" : "text-red-700"}>
                       {c.passed ? "Pass" : "Blocked"}
                     </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <a
+                      href={`/check?input=${encodeURIComponent(Buffer.from(JSON.stringify(c.input)).toString("base64"))}`}
+                      className="text-brand hover:underline"
+                    >
+                      Reuse
+                    </a>
                   </td>
                 </tr>
               ))}

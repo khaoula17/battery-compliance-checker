@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CheckResult, ShipmentInput } from "@/lib/compliance/types";
 import { RequiredMarks } from "@/components/MarkIcons";
 
@@ -38,6 +38,43 @@ export default function CheckPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadMsg, setUploadMsg] = useState<string | null>(null);
   const [meta, setMeta] = useState({ shipperName: "", consigneeName: "", reference: "" });
+  const [copied, setCopied] = useState(false);
+
+  // Pre-fill from a saved shipment (Reuse from the dashboard) via ?input=<base64>.
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get("input");
+    if (!p) return;
+    try {
+      const parsed = JSON.parse(decodeURIComponent(escape(atob(p)))) as Partial<ShipmentInput>;
+      setForm((f) => ({ ...f, ...parsed }));
+    } catch {
+      /* ignore malformed */
+    }
+  }, []);
+
+  async function copySummary() {
+    if (!result) return;
+    const c = result.classification;
+    const lines = [
+      `ClearToShip pre-check — ${new Date().toLocaleString()}`,
+      `${c.unNumber} · PI ${c.packingInstruction} · Section ${c.section}`,
+      `Result: ${result.passed ? "PASS — no blocking issues" : "BLOCKED"}`,
+      `Marks: ${c.requiredMarks.join(", ") || "—"}`,
+      `Labels: ${c.requiredLabels.join(", ") || "—"}`,
+      `Shipper's Declaration: ${c.dgdRequired ? "required" : "not required (Section II)"}`,
+      "",
+      ...result.findings.map((f) => `[${f.severity.toUpperCase()}] ${f.message}${f.fix ? " — Fix: " + f.fix : ""}`),
+      "",
+      `Ruleset ${result.rulesetVersion}. Pre-check only — a trained shipper verifies and signs the declaration.`,
+    ];
+    try {
+      await navigator.clipboard.writeText(lines.join("\n"));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError("Couldn't copy — your browser blocked clipboard access.");
+    }
+  }
 
   function set<K extends keyof ShipmentInput>(key: K, value: ShipmentInput[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -360,12 +397,20 @@ export default function CheckPage() {
                 </div>
               )}
 
-              <button
-                onClick={downloadPdf}
-                className="w-full rounded-md border border-brand px-4 py-2.5 text-sm font-medium text-brand hover:bg-teal-50"
-              >
-                ⬇ Download compliance PDF
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={downloadPdf}
+                  className="flex-1 rounded-md border border-brand px-4 py-2.5 text-sm font-medium text-brand hover:bg-teal-50"
+                >
+                  ⬇ Download PDF
+                </button>
+                <button
+                  onClick={copySummary}
+                  className="flex-1 rounded-md border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-slate-400"
+                >
+                  {copied ? "✓ Copied" : "⧉ Copy summary"}
+                </button>
+              </div>
 
               <p className="text-xs text-slate-400">
                 Ruleset {result.rulesetVersion} · {result.rulesetEdition} · generated {new Date(result.generatedAt).toLocaleString()}
