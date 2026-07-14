@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { CheckResult, ShipmentInput } from "@/lib/compliance/types";
 import { RequiredMarks } from "@/components/MarkIcons";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 const sectionBadge: Record<string, string> = {
   II: "bg-emerald-100 text-emerald-800",
@@ -410,6 +411,13 @@ export default function CheckPage() {
                 >
                   {copied ? "✓ Copied" : "⧉ Copy summary"}
                 </button>
+              </div>
+
+              <div className="rounded-lg border border-slate-200 bg-teal-50/40 p-3">
+                <p className="text-xs font-medium text-slate-700">📧 Get notified when these rules change</p>
+                <div className="mt-2">
+                  <NewsletterSignup source="checker-result" compact />
+                </div>
               </div>
 
               <p className="text-xs text-slate-400">

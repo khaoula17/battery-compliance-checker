@@ -1,5 +1,6 @@
 import { Pricing } from "@/components/Pricing";
 import { TESTIMONIALS } from "@/lib/testimonials";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 export default function Home() {
   return (
@@ -127,6 +128,20 @@ export default function Home() {
             <Faq q="Will the carrier accept the output?" a="Treat the PDF as a pre-flight summary for your review, then file the actual declaration in your carrier's accepted system (FedEx Ship Manager, UPS WorldShip, MyDHL+) or an approved vendor. We tell you what's required so the carrier step goes smoothly." />
             <Faq q="Which rules does it cover?" a="Lithium-ion and lithium-metal by air: PI 965–970, Section II/IB/IA/I, watt-hour and lithium-content thresholds, the 30% state-of-charge rule for UN3480, UN 38.3 test summary, marks/labels, and FedEx/UPS/DHL variations. EU and full quantity tables are on the roadmap." />
             <Faq q="Is my data stored?" a="Anonymous checks aren't stored. If you create an account, your checks are saved to your dashboard so you can reuse them." />
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter capture */}
+      <section className="bg-white border-t border-slate-200">
+        <div className="mx-auto max-w-3xl px-4 py-14 text-center">
+          <h2 className="text-2xl font-bold text-slate-900">Stay current — automatically</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            IATA and 49 CFR change every year. Get a plain-English heads-up the moment a
+            lithium-battery rule changes — free.
+          </p>
+          <div className="mx-auto mt-5 max-w-md text-left">
+            <NewsletterSignup source="landing" title="" subtitle="" />
           </div>
         </div>
       </section>

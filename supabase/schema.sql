@@ -47,11 +47,21 @@ create table if not exists public.api_keys (
 -- If the table already exists, add the column:
 -- alter table public.api_keys add column if not exists usage_count integer not null default 0;
 
+-- Newsletter / lead capture (from the free tool + landing). Inserted via the
+-- service-role key in /api/subscribe, so RLS can stay locked down.
+create table if not exists public.subscribers (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  source text,
+  created_at timestamptz not null default now()
+);
+
 -- ---------- Row Level Security ----------
 alter table public.profiles enable row level security;
 alter table public.checks   enable row level security;
 alter table public.api_keys enable row level security;
 alter table public.domains  enable row level security;
+alter table public.subscribers enable row level security;
 
 -- Profiles: a user can see/update only their own row.
 create policy "own profile read"   on public.profiles for select using (auth.uid() = id);

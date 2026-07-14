@@ -152,6 +152,19 @@ export async function linkStripeCustomer(userId: string, customerId: string): Pr
   await admin.from("profiles").update({ stripe_customer_id: customerId }).eq("id", userId);
 }
 
+// --- Newsletter / lead capture ---
+
+export async function addSubscriber(email: string, source: string): Promise<{ ok: boolean; stored: boolean }> {
+  const admin = createAdminClient();
+  if (!admin) return { ok: true, stored: false }; // graceful when DB not configured
+  // Upsert-ish: ignore duplicates (unique email).
+  const { error } = await admin.from("subscribers").insert({ email, source });
+  if (error && !/(duplicate|unique)/i.test(error.message)) {
+    return { ok: false, stored: false };
+  }
+  return { ok: true, stored: true };
+}
+
 // --- API keys (REST) ---
 
 import { createHash, randomBytes } from "crypto";
