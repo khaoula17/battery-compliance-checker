@@ -154,10 +154,47 @@ export async function linkStripeCustomer(userId: string, customerId: string): Pr
 
 // --- API keys (REST) ---
 
-import { createHash } from "crypto";
+import { createHash, randomBytes } from "crypto";
+
+export interface ApiKeyRow {
+  id: string;
+  label: string | null;
+  last_used_at: string | null;
+  usage_count: number;
+  created_at: string;
+}
 
 export function hashApiKey(raw: string): string {
   return createHash("sha256").update(raw).digest("hex");
+}
+
+// Create a key: returns the raw value ONCE (only the hash is stored).
+export async function createApiKey(userId: string, label: string): Promise<{ raw: string } | null> {
+  const supabase = createClient();
+  if (!supabase) return null;
+  const raw = "sk_live_" + randomBytes(24).toString("hex");
+  const { error } = await supabase
+    .from("api_keys")
+    .insert({ user_id: userId, key_hash: hashApiKey(raw), label: label || "API key" });
+  if (error) return null;
+  return { raw };
+}
+
+export async function listApiKeys(userId: string): Promise<ApiKeyRow[]> {
+  const supabase = createClient();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("api_keys")
+    .select("id, label, last_used_at, usage_count, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  return (data as ApiKeyRow[]) ?? [];
+}
+
+export async function revokeApiKey(userId: string, id: string): Promise<void> {
+  const supabase = createClient();
+  if (!supabase) return;
+  await supabase.from("api_keys").delete().eq("user_id", userId).eq("id", id);
 }
 
 export async function findApiKeyOwner(rawKey: string): Promise<{ userId: string; plan: Plan } | null> {
@@ -166,11 +203,14 @@ export async function findApiKeyOwner(rawKey: string): Promise<{ userId: string;
   const hash = hashApiKey(rawKey);
   const { data } = await admin
     .from("api_keys")
-    .select("user_id, profiles(plan)")
+    .select("user_id, usage_count, profiles(plan)")
     .eq("key_hash", hash)
     .single();
   if (!data) return null;
   const plan = (data as any).profiles?.plan ?? "free";
-  await admin.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("key_hash", hash);
+  await admin
+    .from("api_keys")
+    .update({ last_used_at: new Date().toISOString(), usage_count: ((data as any).usage_count ?? 0) + 1 })
+    .eq("key_hash", hash);
   return { userId: (data as any).user_id, plan };
 }

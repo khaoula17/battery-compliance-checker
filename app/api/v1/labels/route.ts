@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { runCheck, type ShipmentInput } from "@/lib/compliance";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { findApiKeyOwner } from "@/lib/db";
-import { canUseApi } from "@/lib/plans";
+import { canUseApi, billingEnabled } from "@/lib/plans";
 
 // REST API for freight forwarders / 3PLs.
 // POST /api/v1/labels
@@ -21,7 +21,8 @@ export async function POST(req: Request) {
     if (!token) return NextResponse.json({ error: "Missing API key" }, { status: 401 });
     const owner = await findApiKeyOwner(token);
     if (!owner) return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
-    if (!canUseApi(owner.plan)) {
+    // Plan gating only applies once paid billing is live.
+    if (billingEnabled() && !canUseApi(owner.plan)) {
       return NextResponse.json({ error: "API access requires the White-label plan." }, { status: 402 });
     }
   } else {

@@ -3,6 +3,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getProfile, countChecksThisMonth, listChecks, type SavedCheck, type Profile } from "@/lib/db";
 import { planFor } from "@/lib/plans";
 import { ManageBillingButton } from "@/components/billing";
+import { ApiKeys } from "@/components/ApiKeys";
 import { runCheck } from "@/lib/compliance";
 
 export const dynamic = "force-dynamic";
@@ -118,6 +119,12 @@ function DashboardView({
           </table>
         )}
       </div>
+
+      {!demo && (
+        <div className="mt-8">
+          <ApiKeys />
+        </div>
+      )}
     </div>
   );
 }

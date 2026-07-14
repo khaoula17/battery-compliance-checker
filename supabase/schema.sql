@@ -41,8 +41,11 @@ create table if not exists public.api_keys (
   key_hash text not null unique,
   label text,
   last_used_at timestamptz,
+  usage_count integer not null default 0,
   created_at timestamptz not null default now()
 );
+-- If the table already exists, add the column:
+-- alter table public.api_keys add column if not exists usage_count integer not null default 0;
 
 -- ---------- Row Level Security ----------
 alter table public.profiles enable row level security;

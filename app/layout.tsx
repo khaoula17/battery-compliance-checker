@@ -61,6 +61,7 @@ export default function RootLayout({
                 <a href="/check" className="hover:text-brand">Checker</a>
                 <a href="/batch" className="hover:text-brand">Batch</a>
                 <a href="/compare" className="hover:text-brand">Compare</a>
+                <a href="/developers" className="hover:text-brand">API</a>
                 <a href="/changelog" className="hover:text-brand">Updates</a>
                 <a href="/terms" className="hover:text-brand">Terms</a>
                 <a href="/privacy" className="hover:text-brand">Privacy</a>
